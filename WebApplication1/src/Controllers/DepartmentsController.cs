@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using WebApplication1.Helpers;
 using WebApplication1.Models;
 using WebApplication1.DTOs;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace WebApplication1.Controllers
 {
@@ -34,7 +32,8 @@ namespace WebApplication1.Controllers
             return Ok(departmentDtos);
         }
 
-        [HttpGet("{id}")]
+       [HttpGet("{id}")]
+       // idk how to correctly implement this endpoint :,( but at least i creates DTOs for it 
         public async Task<ActionResult<Department>> GetDepartmentById(int id)
         {
             var department = await _context.Departments.FindAsync(id);
@@ -45,7 +44,7 @@ namespace WebApplication1.Controllers
             }
 
             return department;
-        }
+        } 
 
         [HttpPost]
         public async Task<ActionResult<Department>> CreateDepartment([FromBody] CreateDepartmentDto createDepartmentDto)
