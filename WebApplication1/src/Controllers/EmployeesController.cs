@@ -5,6 +5,7 @@ using WebApplication1.Models;
 using WebApplication1.DTOs;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Threading;
 
 namespace WebApplication1.Controllers
 {
@@ -20,10 +21,10 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Employee>> CreateEmployee(CreateEmployeeDto createEmployeeDto)
+        public async Task<ActionResult<Employee>> CreateEmployee(CreateEmployeeDto createEmployeeDto, CancellationToken cancellationToken)
         {
-            var manager = await _context.Employees.FindAsync(createEmployeeDto.ManagerId);
-            var department = await _context.Departments.FindAsync(createEmployeeDto.DepId);
+            var manager = await _context.Employees.FindAsync(new object[] { createEmployeeDto.ManagerId }, cancellationToken);
+            var department = await _context.Departments.FindAsync(new object[] { createEmployeeDto.DepId }, cancellationToken);
 
             if (createEmployeeDto.ManagerId != null && manager == null)
             {
@@ -47,15 +48,13 @@ namespace WebApplication1.Controllers
             };
 
             _context.Employees.Add(employee);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
             return CreatedAtAction(nameof(CreateEmployee), new { id = employee.EmpID }, employee);
         }
 
-
-
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateEmployee(int id, Employee employee)
+        public async Task<IActionResult> UpdateEmployee(int id, Employee employee, CancellationToken cancellationToken)
         {
             if (id != employee.EmpID)
             {
@@ -66,7 +65,7 @@ namespace WebApplication1.Controllers
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(cancellationToken);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -84,16 +83,16 @@ namespace WebApplication1.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEmployee(int id)
+        public async Task<IActionResult> DeleteEmployee(int id, CancellationToken cancellationToken)
         {
-            var employee = await _context.Employees.FindAsync(id);
+            var employee = await _context.Employees.FindAsync(new object[] { id }, cancellationToken);
             if (employee == null)
             {
                 return NotFound(new { Message = "Employee not found" });
             }
 
             _context.Employees.Remove(employee);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
             return NoContent();
         }
@@ -104,4 +103,3 @@ namespace WebApplication1.Controllers
         }
     }
 }
-    
