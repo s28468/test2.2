@@ -33,7 +33,7 @@ namespace WebApplication1.Controllers
         }
 
        [HttpGet("{id}")]
-       // idk how to correctly implement this endpoint :,( but at least i creates DTOs for it 
+       // idk how to correctly implement this endpoint :,( but at least i created DTOs for it 
         public async Task<ActionResult<Department>> GetDepartmentById(int id)
         {
             var department = await _context.Departments.FindAsync(id);
